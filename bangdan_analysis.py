@@ -158,12 +158,13 @@ class BangdanAnalyzer(object):
                             if "desc_extr" in s_card.keys():
                             # 讨论小于10w的丢掉
                             # print(s_card["desc_extr"])
-                                hot = re.findall(r'\d+', str(s_card["desc_extr"]))
+                                hot_number = re.findall(r'\d+', str(s_card["desc_extr"]))
+                                hot = hot_number[0] if len(hot_number) > 0 else None
                             
                             is_rear = 1 if re.search(self.rear_pattern, text) is not None else 0
                                 
 
-                            bangdan_text_list.append(f"{crawler_time_stamp},{date},{text},{hot[0]},{is_rear}")
+                            bangdan_text_list.append(f"{crawler_time_stamp},{date},{text},{hot},{is_rear}")
 
                         else:
                             print(f"desc not in keys! file_name {file_path}, data: {s_card}")
@@ -189,7 +190,7 @@ class BangdanAnalyzer(object):
 
 
 if __name__ == "__main__":
-    unzip_all_bangdan_files()
+    # unzip_all_bangdan_files()
     for year in ANALYSIS_YEARS:
         # if year in [2020, 2021]:
         #     continue
