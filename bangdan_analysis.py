@@ -186,6 +186,7 @@ class BangdanAnalyzer(object):
                 continue
             with open(f"bangdan_working_data/{month_str}.csv", "a") as wfile:
                 wfile.write("\n".join(bangdan_text_list))
+                wfile.write("\n")
             print(f"processed {date_str} in year {self.year}")
 
 

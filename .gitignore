@@ -166,3 +166,8 @@ cython_debug/
 logs/
 *.out
 *.sh
+img/
+
+*.csv
+*.tar.gz
+*.pdf
