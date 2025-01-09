@@ -26,6 +26,8 @@ from concurrent.futures import ProcessPoolExecutor
 from configs.configs import *
 from utils.utils import *
 
+import argparse
+
 
 TEXT_DIR = "text_data"
 
@@ -233,5 +235,9 @@ def process_year(year, mode):
 
 if __name__ == "__main__":
     # for y in [2016, 2017, 2018, 2019]:
-    process_year(2023, 1)
-    log("处理完毕。")
+    # add arg parse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--year", type=int, default=2023)
+    parser.add_argument("--mode", type=int, default=1)
+    args = parser.parse_args()
+    process_year(args.year, args.mode)
