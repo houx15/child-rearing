@@ -105,7 +105,7 @@ def process_chunk_special(chunk, automation, result_set):
             line_data = line.strip().strip('"').split('","')
             try:
                 weibo_content = line_data[9].replace('\n', ' ') if line_data[3] == "0" else line_data[9].replace('\n', ' ') + '//' + line_data[22].replace('\n', ' ')
-                result_set.add([kid,line_data[0],line_data[4],line_data[2],line_data[3],line_data[10],line_data[11],line_data[12],weibo_content])
+                result_set.add((kid,line_data[0],line_data[4],line_data[2],line_data[3],line_data[10],line_data[11],line_data[12],weibo_content))
             except:
                 continue
 
@@ -131,7 +131,7 @@ def process_chunk(chunk, automaton, result_set):
             
             try:
                 weibo_content = data['weibo_content'].replace('\n', ' ') if data['is_retweet'] == "0" else data['weibo_content'].replace('\n', ' ') + '//' + data['r_weibo_content'].replace('\n', ' ')
-                result_set.add([kid,data['weibo_id'],data['user_id'],data['time_stamp'],data['is_retweet'],data['zhuan'],data['ping'],data['zhan'],weibo_content])
+                result_set.add((kid,data['weibo_id'],data['user_id'],data['time_stamp'],data['is_retweet'],data['zhuan'],data['ping'],data['zhan'],weibo_content))
             except KeyError:
                 continue
 
