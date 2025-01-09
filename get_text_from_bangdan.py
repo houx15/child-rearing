@@ -209,11 +209,11 @@ def process_year(year, mode):
         date_str = current_date.strftime("%Y-%m-%d")
 
         # 按照date所属月份，筛选出rear_bangdan中的行, key是id，value是keyword
-        keywords = rear_bangdan[rear_bangdan['date'].dt.month == current_date.month].set_index('id')['keyword'].to_dict()
+        keywords = rear_bangdan[rear_bangdan['date'].dt.month == current_date.month].set_index('id')['text'].to_dict()
         # 如果没有元素，跳过
         if not keywords:
             continue
-        
+
         file_path = unzip_one_fresh_data_file(year, date_str)
         # file_path = f"text_working_data/{year}/weibo_freshdata.test"
         if file_path is None:
