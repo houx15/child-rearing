@@ -30,8 +30,8 @@ TEXT_DIR = "text_data"
 
 def deduplicate_parquet(year):
     # 生成一个list，包括从2020-01-01到2020-12-31的日期
-    start_date = datetime.date(year, 1, 1)
-    end_date = datetime.date(year, 12, 31)
+    start_date = datetime(year, 1, 1)
+    end_date = datetime(year, 12, 31)
     date_range = [start_date + timedelta(days=n) for n in range((end_date - start_date).days + 1)]
 
     for date in date_range:
