@@ -37,6 +37,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 
 TEXT_DIR = "text_data"
+OUTPUT_DIR = "keyword_data"
 
 def get_keywords_dict():
     """加载关键词字典并预处理"""
@@ -81,7 +82,7 @@ def process_parquet(year, output_suffix=""):
 
     # 将匹配结果写入文件
     for kid, texts in keyword_texts.items():
-        keyword_path = f"{TEXT_DIR}/{output_suffix}{kid}.txt"
+        keyword_path = f"{OUTPUT_DIR}/{output_suffix}{kid}.txt"
         with open(keyword_path, 'w') as f:
             f.write('\n'.join(texts))
 
