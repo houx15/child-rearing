@@ -55,7 +55,8 @@ def run(mode, cutoff, timewindow):
     month_rear_and_no_rear_data = {
         "month": [],
         "rear": [],
-        "total": []
+        "total": [],
+        "propotion": []
     }
 
     season_data = defaultdict(lambda: defaultdict(int))
@@ -141,10 +142,15 @@ def run(mode, cutoff, timewindow):
             month_rear_and_no_rear_data["month"].append(year)
             month_rear_and_no_rear_data["rear"].append(data["rear"])
             month_rear_and_no_rear_data["total"].append(data["total"])
+            month_rear_and_no_rear_data["propotion"].append(data["rear"] / data["total"] if data["total"] > 0 else 0)
     
     
     # 用一个dataframe存储proportion数据
     month_rear_proportion = pd.DataFrame.from_dict(month_rear_proportion, orient="index", columns=["proportion"])
+
+    # 存储month_rear_and_no_rear_data excel
+    month_rear_and_no_rear_data = pd.DataFrame.from_dict(month_rear_and_no_rear_data)
+    month_rear_and_no_rear_data.to_excel(f"month_rear_and_no_rear_data_{mode}_{timewindow}_{cutoff if cutoff is not None else 'nocutoff'}.xlsx")
     # 折线图-proportion的变化
     sns.set(style="ticks")
 

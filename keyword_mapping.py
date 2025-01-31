@@ -51,11 +51,16 @@ def get_keywords_dict():
 def process_parquet(year, output_suffix=""):
     """处理指定年份的 Parquet 文件"""
     keywords_dict = get_keywords_dict()
+    full_keywords = set()
+    for kid, info in keywords_dict.items():
+        full_keywords.update(info['all_keywords'])
 
     # 生成日期范围
     start_date = datetime(year, 1, 1)
     end_date = datetime(year, 12, 31)
     date_range = pd.date_range(start=start_date, end=end_date)
+
+    keywords_count = defaultdict(int)
 
     # 使用 defaultdict 存储匹配结果
     keyword_texts = defaultdict(set)
@@ -77,14 +82,21 @@ def process_parquet(year, output_suffix=""):
             keywords = info['all_keywords']  # 获取关键词集合
             for content in df['weibo_content']:
                 # 使用集合匹配提高效率
+                content = content.split('//')[0]  # 去除微博内容中的转发
                 if any(keyword in content for keyword in keywords):
                     keyword_texts[kid].add(content)
+                    for single_keyword in full_keywords:
+                        if single_keyword in content:
+                            keywords_count[single_keyword] += 1   
 
     # 将匹配结果写入文件
     for kid, texts in keyword_texts.items():
         keyword_path = f"{OUTPUT_DIR}/{output_suffix}{kid}.txt"
         with open(keyword_path, 'w') as f:
             f.write('\n'.join(texts))
+    
+    with open(f"{OUTPUT_DIR}/{output_suffix}keywords_count.json", 'w') as f:
+        json.dump(keywords_count, f, ensure_ascii=False)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
