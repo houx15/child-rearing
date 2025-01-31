@@ -99,36 +99,42 @@ def process_chunk_special(chunk, automation, result_set):
             except:
                 continue
 
-def process_chunk(chunk, automation1, automation2, result_set):
+def process_chunk(year, chunk, automation1, automation2, result_set):
     for line in chunk:
         for end_index, (kid1, keyword1) in automation1.iter(line):
             for end_index2, (kid2, keyword2) in automation2.iter(line):
                 """
                 40984940671        {"id":"40984940671","crawler_time":"2020-01-01 04:27:59","crawler_time_stamp":"1577824079000","is_retweet":"0","user_id":"5706021763","nick_name":"诗词歌赋","tou_xiang":"https:\/\/tvax2.sinaimg.cn\/crop.0.0.1002.1002.50\/006e9SV5ly8g4yg7ozexlj30ru0ruabp.jpg?KID=imgbed,tva&Expires=1577834878&ssig=lHvYHGBxwq","user_type":"黄V","weibo_id":"4455589780114474","weibo_content":"给自己设立一个目标，给自己未来一个明确的希望，给自己的生活一个方向灯。冲着这个方向而努力，不断去超越自己，提高自己的水平，不能让自己有懈怠的时候。早安! ","zhuan":"0","ping":"0","zhan":"0","url":"Ink8W0tMm","device":"Redmi Note 7 Pro","locate":"","time":"2019-12-31 15:54:07","time_stamp":"1577778847","r_user_id":"","r_nick_name":"","r_user_type":"","r_weibo_id":"","r_weibo_content":"","r_zhuan":"","r_ping":"","r_zhan":"","r_url":"","r_device":"","r_location":"","r_time":"","r_time_stamp":"","pic_content":"","src":"4","tag":"106750860151","vedio":"0","vedio_image":"","edited":"0","r_edited":"","isLongText":"0","r_isLongText":"","lat":"","lon":"","d":"2020-01-01"}
                 """
-                line_data = line.strip().split("\t")
-                try:
-                    data = json.loads(line_data[1])
-                except IndexError as e:
-                    print(f"IndexError occurred: {e}")
-                    continue
-                except json.JSONDecodeError as e:
-                    print(f"JSONDecodeError: {e}")
-                    # 打印出错误位置
-                    print(f"Error at line {e.lineno}, column {e.colno}")
-                    # 打印出错误字符位置
-                    print(f"Error at character {e.pos}, {line_data[1][int(e.pos)-20: int(e.pos)+20]}")
-                    continue
-                
-                try:
-                    weibo_content = data['weibo_content'].replace('\n', ' ') if data['is_retweet'] == "0" else data['weibo_content'].replace('\n', ' ') + '//' + data['r_weibo_content'].replace('\n', ' ')
-                    result_set.add((kid2,data['weibo_id'],data['user_id'],data['time_stamp'],data['is_retweet'],data['zhuan'],data['ping'],data['zhan'],weibo_content))
-                except KeyError:
-                    continue
+                line_data = line.strip()
+                if year >= 2020:
+                    line_data = line.strip().split("\t")
+                    try:
+                        data = json.loads(line_data[1])
+                    except IndexError as e:
+                        print(f"IndexError occurred: {e}")
+                        continue
+                    except json.JSONDecodeError as e:
+                        print(f"JSONDecodeError: {e}")
+                        # 打印出错误位置
+                        print(f"Error at line {e.lineno}, column {e.colno}")
+                        # 打印出错误字符位置
+                        print(f"Error at character {e.pos}, {line_data[1][int(e.pos)-20: int(e.pos)+20]}")
+                        continue
+                    
+                    try:
+                        weibo_content = data['weibo_content'].replace('\n', ' ') if data['is_retweet'] == "0" else data['weibo_content'].replace('\n', ' ') + '//' + data['r_weibo_content'].replace('\n', ' ')
+                        result_set.add((kid2,data['weibo_id'],data['user_id'],data['time_stamp'],data['is_retweet'],data['zhuan'],data['ping'],data['zhan'],weibo_content))
+                    except KeyError:
+                        continue
+                else:
+                    line_data = line.split("\t")
+                    weibo_content = line_data[9].replace('\n', ' ') if line_data[3] == "0" else line_data[9].replace('\n', ' ') + '//' + line_data[22].replace('\n', ' ')
+                    result_set.add((kid2,line_data[8],line_data[4],line_data[17],line_data[3],line_data[10],line_data[11],line_data[12],weibo_content))
 
 
 
-def process_file(file_path):
+def process_file(year, file_path):
     """
     处理单个文件并完成存储
     """
@@ -156,11 +162,11 @@ def process_file(file_path):
         for line in file:
             chunk.append(line.strip())
             if len(chunk) == chunk_size:
-                process_chunk(chunk, automation1, automation2, result_set)
+                process_chunk(year, chunk, automation1, automation2, result_set)
                 chunk = []
         # 处理最后一个不满 chunk_size 的块
         if chunk:
-            process_chunk(chunk, automation1, automation2, result_set)
+            process_chunk(year, chunk, automation1, automation2, result_set)
     
     return result_set
 
@@ -204,7 +210,7 @@ def process_year(year, mode):
         if file_path is None:
             continue
         start_timestamp = int(time.time())
-        results = process_file(file_path)
+        results = process_file(year, file_path)
         append_to_parquet(date_str, results)
 
         log(
