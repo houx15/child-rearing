@@ -205,7 +205,28 @@ def append_to_parquet(date, results):
     #     log(f"追加数据到文件：{output_parquet_path}")
 
 
-def process_year(year, mode):
+"""
+统计四个结果：
+1. 不同关键词的词频
+2. 不同品质的频率
+3. 上述两个结果除以总量（总文本行数）
+"""
+
+# 计算文本行数
+def count_lines(file_path):
+    with open(file_path, "r", encoding="utf-8") as f:
+        return sum(1 for line in f)
+
+def write_count_lines(year, mode, content):
+    with open(f"logs/line_count_{year}_{mode}.txt", "w") as f:
+        f.write(content)
+
+def process_year(year, mode, action="extract"):
+    """
+    action:
+    extract - 从文本中提取含有关键词的内容
+    count - 统计文本行数
+    """
     start_date_options = [datetime(year, 1, 1), datetime(year, 7, 1)]
     end_date_options = [datetime(year, 6, 30), datetime(year, 12, 31)]
     start_date = start_date_options[mode]
@@ -223,13 +244,22 @@ def process_year(year, mode):
         if file_path is None:
             continue
         start_timestamp = int(time.time())
-        results = process_file(current_date, file_path)
-        append_to_parquet(date_str, results)
+        if action == "extract":
+            results = process_file(current_date, file_path)
+            append_to_parquet(date_str, results)
 
-        log(
-            f"处理 {date_str} 完成，耗时 {int(time.time()) - start_timestamp} 秒。",
-            f"{year}_{mode}",
-        )
+            log(
+                f"处理 {date_str} 完成，耗时 {int(time.time()) - start_timestamp} 秒。",
+                f"{year}_{mode}",
+            )
+        elif action == "count":
+            line_count = count_lines(file_path)
+            output = f"{date_str},{line_count}\n"
+            write_count_lines(year, mode, output)
+            log(
+                f"处理 {date_str} 完成，文本行数 {line_count}。",
+                f"{year}_{mode}",
+            )
 
         delete_unzipped_fresh_data_file(year, date_str)
         print(f"finished {date_str} with {len(results)} records")
@@ -241,5 +271,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--year", type=int, default=2023)
     parser.add_argument("--mode", type=int, default=1)
+    parser.add_argument("--action", type=str, default="extract")
     args = parser.parse_args()
-    process_year(args.year, args.mode)
+    process_year(args.year, args.mode, args.action)
