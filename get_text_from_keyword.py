@@ -218,7 +218,7 @@ def count_lines(file_path):
         return sum(1 for line in f)
 
 def write_count_lines(year, mode, content):
-    with open(f"logs/line_count_{year}_{mode}.txt", "w") as f:
+    with open(f"logs/line_count_{year}_{mode}.txt", "a") as f:
         f.write(content)
 
 def process_year(year, mode, action="extract"):
