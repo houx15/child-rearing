@@ -99,7 +99,7 @@ def process_chunk_special(chunk, automation, result_set):
             except:
                 continue
 
-def process_chunk(year, chunk, automation1, automation2, result_set):
+def process_chunk(date, chunk, automation1, automation2, result_set):
     for line in chunk:
         for end_index, (kid1, keyword1) in automation1.iter(line):
             for end_index2, (kid2, keyword2) in automation2.iter(line):
@@ -107,7 +107,9 @@ def process_chunk(year, chunk, automation1, automation2, result_set):
                 40984940671        {"id":"40984940671","crawler_time":"2020-01-01 04:27:59","crawler_time_stamp":"1577824079000","is_retweet":"0","user_id":"5706021763","nick_name":"诗词歌赋","tou_xiang":"https:\/\/tvax2.sinaimg.cn\/crop.0.0.1002.1002.50\/006e9SV5ly8g4yg7ozexlj30ru0ruabp.jpg?KID=imgbed,tva&Expires=1577834878&ssig=lHvYHGBxwq","user_type":"黄V","weibo_id":"4455589780114474","weibo_content":"给自己设立一个目标，给自己未来一个明确的希望，给自己的生活一个方向灯。冲着这个方向而努力，不断去超越自己，提高自己的水平，不能让自己有懈怠的时候。早安! ","zhuan":"0","ping":"0","zhan":"0","url":"Ink8W0tMm","device":"Redmi Note 7 Pro","locate":"","time":"2019-12-31 15:54:07","time_stamp":"1577778847","r_user_id":"","r_nick_name":"","r_user_type":"","r_weibo_id":"","r_weibo_content":"","r_zhuan":"","r_ping":"","r_zhan":"","r_url":"","r_device":"","r_location":"","r_time":"","r_time_stamp":"","pic_content":"","src":"4","tag":"106750860151","vedio":"0","vedio_image":"","edited":"0","r_edited":"","isLongText":"0","r_isLongText":"","lat":"","lon":"","d":"2020-01-01"}
                 """
                 line_data = line.strip()
-                if year >= 2020:
+                # 判断date(datetime)是否比2019-08-09晚
+                if date >= datetime(2019, 8, 9):
+                # if year >= 2020:
                     line_data = line.strip().split("\t")
                     try:
                         data = json.loads(line_data[1])
@@ -129,16 +131,18 @@ def process_chunk(year, chunk, automation1, automation2, result_set):
                         continue
                 else:
                     line_data = line.split("\t")
+                    if len(line_data) < 24:
+                        continue
                     weibo_content = line_data[9].replace('\n', ' ') if line_data[3] == "0" else line_data[9].replace('\n', ' ') + '//' + line_data[22].replace('\n', ' ')
                     result_set.add((kid2,line_data[8],line_data[4],line_data[17],line_data[3],line_data[10],line_data[11],line_data[12],weibo_content))
 
 
 
-def process_file(year, file_path):
+def process_file(date, file_path):
     """
     处理单个文件并完成存储
     """
-    child_keywords = ["子女", "女儿", "儿子", "女孩", "男孩", "孙女", "孙子", "带娃", "带孩子", "养育", "养娃"]
+    child_keywords = ["子女", "女儿", "儿子", "孙女", "孙子", "带娃", "带孩子", "养育", "养娃"] # "女孩", "男孩", TODO 去除女孩、男孩
     quality_keywords = ["独立", "自主", "自理能力", "自立", "挫折教育", "娇气", "脆弱", "温室", "勇敢", "坚强", "自强", "害怕", "溺爱", "男子汉", "自我生存", "依赖性", "努力", "刻苦", "勤劳", "坚持", "有恒心", "半途而废", "懒散", "不上进", "携带", "责任心", "有担当", "可靠", "暖心", "逃避责任", "不负责任", "懂事", "教养", "包容", "宽容", "理解他人", "体谅"]
     # 初始化 Aho-Corasick 自动机
     automation1 = ahocorasick.Automaton()
@@ -162,11 +166,11 @@ def process_file(year, file_path):
         for line in file:
             chunk.append(line.strip())
             if len(chunk) == chunk_size:
-                process_chunk(year, chunk, automation1, automation2, result_set)
+                process_chunk(date, chunk, automation1, automation2, result_set)
                 chunk = []
         # 处理最后一个不满 chunk_size 的块
         if chunk:
-            process_chunk(year, chunk, automation1, automation2, result_set)
+            process_chunk(date, chunk, automation1, automation2, result_set)
     
     return result_set
 
@@ -210,7 +214,7 @@ def process_year(year, mode):
         if file_path is None:
             continue
         start_timestamp = int(time.time())
-        results = process_file(year, file_path)
+        results = process_file(current_date, file_path)
         append_to_parquet(date_str, results)
 
         log(
