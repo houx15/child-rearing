@@ -229,8 +229,12 @@ def process_year(year, mode, action="extract"):
     """
     start_date_options = [datetime(year, 1, 1), datetime(year, 7, 1)]
     end_date_options = [datetime(year, 6, 30), datetime(year, 12, 31)]
-    start_date = start_date_options[mode]
-    end_date = end_date_options[mode]
+    if int(mode) == 2:
+        start_date = datetime(year, 1, 1)
+        end_date = datetime(year, 12, 31)
+    else:
+        start_date = start_date_options[mode]
+        end_date = end_date_options[mode]
 
     current_date = start_date
 
