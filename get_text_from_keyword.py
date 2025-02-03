@@ -107,8 +107,17 @@ def process_chunk(date, chunk, automation1, automation2, result_set):
                 40984940671        {"id":"40984940671","crawler_time":"2020-01-01 04:27:59","crawler_time_stamp":"1577824079000","is_retweet":"0","user_id":"5706021763","nick_name":"诗词歌赋","tou_xiang":"https:\/\/tvax2.sinaimg.cn\/crop.0.0.1002.1002.50\/006e9SV5ly8g4yg7ozexlj30ru0ruabp.jpg?KID=imgbed,tva&Expires=1577834878&ssig=lHvYHGBxwq","user_type":"黄V","weibo_id":"4455589780114474","weibo_content":"给自己设立一个目标，给自己未来一个明确的希望，给自己的生活一个方向灯。冲着这个方向而努力，不断去超越自己，提高自己的水平，不能让自己有懈怠的时候。早安! ","zhuan":"0","ping":"0","zhan":"0","url":"Ink8W0tMm","device":"Redmi Note 7 Pro","locate":"","time":"2019-12-31 15:54:07","time_stamp":"1577778847","r_user_id":"","r_nick_name":"","r_user_type":"","r_weibo_id":"","r_weibo_content":"","r_zhuan":"","r_ping":"","r_zhan":"","r_url":"","r_device":"","r_location":"","r_time":"","r_time_stamp":"","pic_content":"","src":"4","tag":"106750860151","vedio":"0","vedio_image":"","edited":"0","r_edited":"","isLongText":"0","r_isLongText":"","lat":"","lon":"","d":"2020-01-01"}
                 """
                 line_data = line.strip()
+                if date == datetime(2020, 6, 30):
+                    """
+                    "46890032291","2020-06-30 00:12:36","1593447156000","1","2789934082","妞子蓝楸瑛","https://tva1.sinaimg.cn/crop.0.0.180.180.50/a64b0402jw1e8qgp5bmzyj2050050aa8.jpg?KID=imgbed,tva&Expires=1593457954&ssig=WuAFhSJ49R","普通用户","4520977143508623","转发微博","0","0","0","J8NI6eIKH","微博 weibo.com","","2020-06-29 02:20:09","1593368409","2920534890","地盘鲁路修兰佩洛基1986","普通用户","4247252011050572","双子座 今日(6月4日)综合运势：5，幸运颜色：粉色，幸运数字：7，速配星座：天蝎座（分享自@微心情） 查看更多：http://t.cn/h5gw6 ​​​","95","0","0","GjPeV4piI","微博 weibo.com","","2018-06-04 18:14:11","1528107251","","0","","0","0","0","0","2020-06-30"
+                    """
+                    line_data = line.split('","')
+                    if len(line_data) < 24:
+                        continue
+                    weibo_content = line_data[9].replace('\n', ' ') if line_data[3] == "0" else line_data[9].replace('\n', ' ') + '//' + line_data[22].replace('\n', ' ')
+                    result_set.add((kid2,line_data[8],line_data[4],line_data[17],line_data[3],line_data[10],line_data[11],line_data[12],weibo_content))
                 # 判断date(datetime)是否比2019-08-09晚
-                if date >= datetime(2019, 8, 9):
+                elif date >= datetime(2019, 8, 9):
                 # if year >= 2020:
                     line_data = line.strip().split("\t")
                     try:
