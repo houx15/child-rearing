@@ -256,6 +256,7 @@ def process_year(year, mode, action="extract"):
                 f"处理 {date_str} 完成，耗时 {int(time.time()) - start_timestamp} 秒。",
                 f"{year}_{mode}",
             )
+            print(f"finished {date_str} with {len(results)} records")
         elif action == "count":
             line_count = count_lines(file_path)
             output = f"{date_str},{line_count}\n"
@@ -264,9 +265,10 @@ def process_year(year, mode, action="extract"):
                 f"处理 {date_str} 完成，文本行数 {line_count}。",
                 f"{year}_{mode}",
             )
+            print(f"finished {date_str}  records")
 
         delete_unzipped_fresh_data_file(year, date_str)
-        print(f"finished {date_str} with {len(results)} records")
+        
 
 
 if __name__ == "__main__":
