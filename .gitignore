@@ -171,3 +171,7 @@ img/
 *.csv
 *.tar.gz
 *.pdf
+
+ignore-*/
+.DS_Store
+others/

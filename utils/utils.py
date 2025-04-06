@@ -44,17 +44,18 @@ def extract_single_7z_file(file_path, target_folder):
 def weibo_text_cleaner(sentence):
     if len(sentence) < 10:
         return None
+    sentence = sentence.replace("“", "")
+    sentence = sentence.replace("”", "")
+    sentence = sentence.replace("…", "")
     sentence = sentence.replace("点击链接查看更多->", "")
-    sentence = sentence.replace("Forward Weibo", "")
-    sentence = sentence.replace("快转微博", "")
-    sentence = sentence.replace("转发微博", "")
-    sentence = sentence.replace("video", "")
-    url_pattern = re.compile(r'https?://[^\s]+')
-    sentence = re.sub(url_pattern, '', sentence)
-    sentence = sentence.replace("\u200b", "")
-    # results2 = re.compile(r'[//@].*?[:]', re.S)
-    # sentence = re.sub(results2, '', sentence)
-    # sentence = sentence.replace("\n", " ")
+    results = re.compile(
+        r"[a-zA-Z0-9.?/&=:_%,-~#《》]", re.S
+    )  # 。，：；“”‘’【】（） ]', re.S)
+    # results = re.compile(r'[http|https]*://[a-zA-Z0-9.?/&=:_%,-~]*', re.S)
+    sentence = re.sub(results, "", sentence)
+    results2 = re.compile(r"[//@].*?[:]", re.S)
+    sentence = re.sub(results2, "", sentence)
+    sentence = sentence.replace("\n", " ")
     sentence = sentence.strip()
     if len(sentence) < 10:
         return None
