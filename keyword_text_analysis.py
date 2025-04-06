@@ -262,6 +262,21 @@ def aggregate():
 
     plt.cla()
 
+
+    # year quality - 计算2016-2023每一年每一个quality占四种quality的比例
+    # 堆叠图 stackplot 横轴为年份，用不同的quality颜色表示
+
+    yearly_quality = yearly_quality[yearly_quality['year'] != 2018]  # 2018年数据异常，删除
+
+    plt.figure(figsize=(12, 6))
+    yearly_quality_pivot = yearly_quality.pivot(index='year', columns='quality', values='frequency').fillna(0)
+    yearly_quality_pivot = yearly_quality_pivot.div(yearly_quality_pivot.sum(axis=1), axis=0)
+    yearly_quality_pivot.plot(kind='bar', stacked=True, ax=plt.gca())
+    plt.title("Yearly Quality Percentage")
+    plt.legend(loc='upper right')
+    plt.tight_layout()
+    plt.savefig(f"{TEXT_DIR}/yearly_quality_percentage_stackplot.pdf", format='pdf')
+
 def text_sample():
     """
     每个关键词每年sample 1000条文本
